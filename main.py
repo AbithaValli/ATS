@@ -1,5 +1,5 @@
 from typing import List
-from pydantic import  BaseModel
+from pydantic import  BaseModel,ValidationError
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -46,23 +46,20 @@ def show_jobs(db: Session = Depends(get_db)):
 
     records = db.query(model.Jobs).all()
     return records
-@app.post("/postjobs/",response_model=List[schemas.Jobs])
-async def post_jobs(job_name:str,no_of_vacancies:int,job_description:str,admin: schemas.Jobs,db: Session = Depends(get_db)):
+@app.post("/postjobs/",response_model=schemas.Jobs)
+def post_jobs(j_name,vacancies,j_desc,admin:schemas.Jobs,db: Session = Depends(get_db)):
 
-  db_user = model.Jobs(job_name=admin.job_name, no_of_vacancies=admin.no_of_vacancies, job_description=admin.job_description)
+  db_user = model.Jobs(job_name=j_name, no_of_vacancies=vacancies, job_description=j_desc)
   db.add(db_user)
   db.commit()
   db.refresh(db_user)
-  return {
-    "code": "success",
-    "message": "job created"
-  }
+  return db_user
 
-@app.delete("/deletejobs/",response_model=List[schemas.Jobs])
+@app.delete("/deletejobs/",response_model=schemas.Jobs)
 def delete_jobs(id:int,db:Session=Depends(get_db)):
   if model.Users.admin is not 0:
-    db_user = db.query(model.Jobs).delete(filter((model.Jobs.job_id)==id))
-    db.add(db_user)
+    db_user = model.Jobs(job_id=id)
+    db.delete(db_user)
     db.commit()
     db.refresh(db_user)
   return {
@@ -70,11 +67,15 @@ def delete_jobs(id:int,db:Session=Depends(get_db)):
     "message":"job deleted"
   }
 
-@app.get("/jobs/{id}", response_model=List[schemas.Jobs])
-async def search_jobs(id:int, db:Session=Depends(get_db)):
+@app.get("/jobs/{id}", response_model=schemas.Jobs)
+def search_jobs(id:int, db:Session=Depends(get_db)):
+  try:
+    records = db.query(model.Jobs).filter(model.Jobs.job_id == id).first()
+    return records
+  except ValidationError as e:
+    print(e)
 
-  records=db.query(model.Jobs.job_id).filter_by(id)
-  return {"search result": records}
+
 
 @app.put("/jobs/{id}/apply", response_model=List[schemas.Jobs])
 def apply_job(id:int,db:Session=Depends(get_db)):
