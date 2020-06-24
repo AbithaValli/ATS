@@ -2,7 +2,7 @@
 Backend for Applicant tracking system using fastapi
 
 ---
-#Installing the requirements
+##Installing the requirements
 
 First step is to make sure you have all the requirements installed. Type this in your terminal:
 
@@ -10,7 +10,7 @@ First step is to make sure you have all the requirements installed. Type this in
 
 ---
 
-#Running the backend
+##Running the backend
 
 For application startup, run this command and open http://127.0.0.1:8000 on your browser
 

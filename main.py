@@ -35,17 +35,18 @@ def main():
     return RedirectResponse(url="/docs/")
 
 
-
+#displays all the users
 @app.get("/users/", response_model=List[schemas.Users])
 def show_users(db: Session = Depends(get_db)):
     records = db.query(model.Users).all()
     return records
-
+#displays all the jobs
 @app.get("/jobs/", response_model=List[schemas.Jobs])
 def show_jobs(db: Session = Depends(get_db)):
 
     records = db.query(model.Jobs).all()
     return records
+
 @app.post("/postjobs/",response_model=schemas.Jobs)
 def post_jobs(j_name,vacancies,j_desc,admin:schemas.Jobs,db: Session = Depends(get_db)):
 
@@ -57,15 +58,16 @@ def post_jobs(j_name,vacancies,j_desc,admin:schemas.Jobs,db: Session = Depends(g
 
 @app.delete("/deletejobs/",response_model=schemas.Jobs)
 def delete_jobs(id:int,db:Session=Depends(get_db)):
-  if model.Users.admin is not 0:
-    db_user = model.Jobs(job_id=id)
-    db.delete(db_user)
+  try:
+
+    records = db.query(model.Jobs).filter(model.Jobs.job_id == id).first()
+    db.delete(records)
     db.commit()
-    db.refresh(db_user)
-  return {
-    "code":"success",
-    "message":"job deleted"
-  }
+    db.refresh(records)
+    return {
+    "code":"success"}
+  except ValidationError as e:
+    print(e)
 
 @app.get("/jobs/{id}", response_model=schemas.Jobs)
 def search_jobs(id:int, db:Session=Depends(get_db)):
@@ -77,8 +79,14 @@ def search_jobs(id:int, db:Session=Depends(get_db)):
 
 
 
-@app.put("/jobs/{id}/apply", response_model=List[schemas.Jobs])
-def apply_job(id:int,db:Session=Depends(get_db)):
-  records=db.query(model.Jobs).filter(model.Jobs.job_id == id)
-  model.Jobs.no_of_vacancies = model.Jobs.no_of_vacancies-1
-  return records
+@app.put("/jobs/{id}/apply", response_model=schemas.Users)
+def apply_job(id:int,uid:int,db:Session=Depends(get_db)):
+
+  db_user= model.Users(job_applied= id,user_id=uid)
+  db.bind(db_user)
+  db.commit()
+  db.refresh(db_user)
+  return {
+    "code" : "success",
+    "message" : "job applied"
+  }
