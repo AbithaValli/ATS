@@ -1,6 +1,7 @@
 from typing import List
 from pydantic import  BaseModel,ValidationError
 from fastapi import Depends, FastAPI
+from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from starlette.responses import RedirectResponse
@@ -77,16 +78,20 @@ def search_jobs(id:int, db:Session=Depends(get_db)):
   except ValidationError as e:
     print(e)
 
+@app.put("/jobs/{id}/apply")
+def apply_job(id,uid,x:schemas.Users,db:Session=Depends(get_db)):
+  try:
+    #db_user= model.Users(user_id=uid,admin=0,job_applied=id)
+    if x.user_id is uid:
 
+      db.__setattr__(x.job_applied,id)
 
-@app.put("/jobs/{id}/apply", response_model=schemas.Users)
-def apply_job(id:int,uid:int,db:Session=Depends(get_db)):
+      db.commit()
 
-  db_user= model.Users(job_applied= id,user_id=uid)
-  db.bind(db_user)
-  db.commit()
-  db.refresh(db_user)
-  return {
-    "code" : "success",
-    "message" : "job applied"
-  }
+    return {
+      "code" : "success",
+      "message" : "job applied"
+    }
+  except ValidationError as e:
+    print(e)
+
