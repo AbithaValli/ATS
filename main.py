@@ -79,10 +79,10 @@ def search_jobs(id:int, db:Session=Depends(get_db)):
     print(e)
 
 @app.put("/jobs/{id}/apply")
-def apply_job(JobName,uid,x:schemas.Users,db:Session=Depends(get_db)):
+def apply_job(JobName,userid,x:schemas.Users,db:Session=Depends(get_db)):
   try:
     #db_user= model.Users(user_id=uid,admin=0,job_applied=id)
-    if x.user_id is uid:
+    if x.user_id is userid:
 
       db.__setattr__(x.job_applied,JobName)
       db.commit()
