@@ -81,14 +81,16 @@ def search_jobs(id:int, db:Session=Depends(get_db)):
 @app.put("/jobs/{id}/apply")
 def apply_job(JobName,userid,x:schemas.Users,db:Session=Depends(get_db)):
   try:
-    #db_user= model.Users(user_id=uid,admin=0,job_applied=id)
+
     if x.user_id is userid:
+      records = db.query(model.Users).filter(model.Users.user_id == userid).first()
 
-      db.__setattr__(x.job_applied,JobName)
+      y=records.__setattr__(x.job_applied,JobName)
+      db.add(y)
       db.commit()
+      db.refresh(y)
 
-
-    return {
+      return {
       "code" : "success",
       "message" : "job applied"
     }
