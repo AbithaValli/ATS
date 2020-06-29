@@ -47,16 +47,16 @@ def show_jobs(db: Session = Depends(get_db)):
 
     records = db.query(model.Jobs).all()
     return records
-
+#adding new jobs to the jobs table
 @app.post("/postjobs/",response_model=schemas.Jobs)
-def post_jobs(j_name,vacancies,j_desc,admin:schemas.Jobs,db: Session = Depends(get_db)):
+def post_jobs(j_name,vacancies,j_desc,db: Session = Depends(get_db)):
 
   db_user = model.Jobs(job_name=j_name, no_of_vacancies=vacancies, job_description=j_desc)
   db.add(db_user)
   db.commit()
   db.refresh(db_user)
   return db_user
-
+#deleting selected jobfrom ats.jobs
 @app.delete("/deletejobs/",response_model=schemas.Jobs)
 def delete_jobs(id:int,db:Session=Depends(get_db)):
   try:
@@ -69,7 +69,7 @@ def delete_jobs(id:int,db:Session=Depends(get_db)):
     "code":"success"}
   except ValidationError as e:
     print(e)
-
+#fwtching the job details from ats.jobs based on the job_id
 @app.get("/jobs/{id}", response_model=schemas.Jobs)
 def search_jobs(id:int, db:Session=Depends(get_db)):
   try:
@@ -77,18 +77,17 @@ def search_jobs(id:int, db:Session=Depends(get_db)):
     return records
   except ValidationError as e:
     print(e)
-
+#updates the users table for the jobs applied by the users
 @app.put("/jobs/{id}/apply")
 def apply_job(JobName,userid,x:schemas.Users,db:Session=Depends(get_db)):
   try:
 
-    if x.user_id is userid:
-      records = db.query(model.Users).filter(model.Users.user_id == userid).first()
 
-      y=records.__setattr__(x.job_applied,JobName)
-      db.add(y)
+
+      records = db.query(model.Users).filter(model.Users.user_id == userid).__setattr__(x.job_applied,JobName)
+      db.add(records)
       db.commit()
-      db.refresh(y)
+      db.refresh(records)
 
       return {
       "code" : "success",
