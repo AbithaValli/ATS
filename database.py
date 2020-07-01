@@ -2,29 +2,29 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
-import mysql.connector
+
 # default
-#engine = create_engine('mysql://root:panda99@localhost/ats')
+engine = create_engine('mysql://root:panda99@localhost/ats')
+import mysql.connector
 
-
-user_name = "root"
-password = "panda99"
-host = "localhost"
-database_name = "ats"
-
-db = 'mysql+mysqlconnector://%s:%s@%s/%s?charset=utf8' % (
-    user_name,
-    password,
-    host,
-    database_name,
+db = mysql.connector.connect(
+  host="localhost",
+  user="root",
+  password="panda99",
+  database="ats"
 )
 
+dbcursor = db.cursor()
 
-engine = create_engine(
-    db,
-    encoding="utf-8",
-    echo=True,
-)
+
+#db = mysql.connector.connect(
+ # host="localhost",
+  #user="root",
+  #password="panda99",
+  #database="ats"
+#)
+
+
 
 
 SessionLocal = scoped_session(
@@ -37,4 +37,6 @@ SessionLocal = scoped_session(
 )
 Base = declarative_base()
 
-Base.query = SessionLocal.query_property()
+Base.query = SessionLocal.query_property
+
+

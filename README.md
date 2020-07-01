@@ -18,3 +18,17 @@ For application startup, run this command and open http://127.0.0.1:8000 on your
 
 ---
 
+@app.put("/jobs/{id}/apply", response_model=schemas.Users)
+def update_item(job_id: int,usr_id:int, item: schemas.Users):
+  try:
+    if item.user_id is usr_id:
+      update_item_encoded = jsonable_encoder(item)
+      item.job_applied = job_id
+      item.job_applied = update_item_encoded
+
+    return {
+      "code" : "success",
+      "message":"job applied"
+    }
+  except ValidationError as e:
+    print(e)

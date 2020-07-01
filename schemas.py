@@ -1,11 +1,11 @@
 from pydantic import BaseModel
-
+from typing import Optional
 
 
 class Users(BaseModel):
-    user_id: int
-    admin: bool
-    job_applied: str
+    user_id: Optional[int]
+    admin: Optional[bool]
+    job_applied: Optional[str]
 
     class Config:
         orm_mode = True
@@ -19,5 +19,6 @@ class Jobs(BaseModel):
 
   class Config:
     orm_mode = True
+
 
 
