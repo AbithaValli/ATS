@@ -67,8 +67,9 @@ def delete_jobs(id:int,db:Session=Depends(get_db)):
     db.delete(records)
     db.commit()
     db.refresh(records)
-    return {
-    "code":"success"}
+    return{
+    "code":"success"
+    }
   except ValidationError as e:
     print(e)
 #fwtching the job details from ats.jobs based on the job_id
@@ -82,18 +83,19 @@ def search_jobs(id:int, db:Session=Depends(get_db)):
 #updates the users table for the jobs applied by the users
 
 
-@app.put("/jobs/{id}/apply")
+@app.put("/jobs/{id}/apply",response_model=schemas.Users)
 def apply_job(JobName,userid,db:Session=Depends((get_db))):
-  sql = "UPDATE users SET job_applied = %s WHERE user_id = %s"
-  val = (JobName, userid)
+    try:
+      records = db.query(model.Users).filter(model.Users.user_id == userid).first()
+      #db_user=records(job_applied = JobName)
+      db.__setattr__(records.job_applied,JobName)
+      db.commit()
+      db.refresh(records)
 
-  dbcursor.execute(sql, val)
+      return {
+      "code":"successful"
+    }
 
-  db.commit()
-
-  print(dbcursor.rowcount, "record(s) affected")
-  return {
-    "code":"successful"
-  }
-
+    except ValidationError as e:
+      print(e)
 
