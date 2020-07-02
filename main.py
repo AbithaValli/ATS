@@ -59,19 +59,29 @@ def post_jobs(j_name,vacancies,j_desc,db: Session = Depends(get_db)):
   db.refresh(db_user)
   return db_user
 #deleting selected jobfrom ats.jobs
-@app.delete("/deletejobs/",response_model=schemas.Jobs)
+@app.delete("/deletejobs/")
 def delete_jobs(id:int,db:Session=Depends(get_db)):
   try:
 
     records = db.query(model.Jobs).filter(model.Jobs.job_id == id).first()
     db.delete(records)
     db.commit()
-    db.refresh(records)
+    #db.refresh(records)
+
     return{
     "code":"success"
     }
   except ValidationError as e:
     print(e)
+
+  #@app.delete("/user/{job_id}", response_model=schemas.Jobs, responses={404: {"model": HTTPNotFoundError}})
+  #async def delete_user(id: int):
+  #  deleted_count = await model.Jobs.filter(job_id=id).delete()
+   # if not deleted_count:
+    #  raise HTTPException(status_code=404, detail=f"User {id} not found")
+    #return Status(message=f"Deleted user {id}")
+
+
 #fwtching the job details from ats.jobs based on the job_id
 @app.get("/jobs/{id}", response_model=schemas.Jobs)
 def search_jobs(id:int, db:Session=Depends(get_db)):
