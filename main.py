@@ -60,7 +60,7 @@ def post_jobs(j_name,vacancies,j_desc,db: Session = Depends(get_db)):
   return db_user
 
 @app.post("/createuser/",response_model=schemas.Users)
-def post_jobs(u_name,db: Session = Depends(get_db)):
+def new_user(u_name,db: Session = Depends(get_db)):
 
   db_user = model.Users(user_name=u_name,admin=0)
   db.add(db_user)
