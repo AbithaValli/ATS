@@ -6,7 +6,7 @@ class Users(BaseModel):
     user_id: Optional[int]
     admin: Optional[bool]
     job_applied: Optional[str]
-
+    user_name: str
     class Config:
         orm_mode = True
 

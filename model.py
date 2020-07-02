@@ -8,8 +8,8 @@ class Users(Base):
     user_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
 
     admin = Column(Boolean)
-    job_applied = Column(String(25))
-
+    job_applied = Column(String(45))
+    user_name = Column(String(45))
 
 class Jobs(Base):
   __tablename__ = "Jobs"

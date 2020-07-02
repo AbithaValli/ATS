@@ -58,6 +58,17 @@ def post_jobs(j_name,vacancies,j_desc,db: Session = Depends(get_db)):
   db.commit()
   db.refresh(db_user)
   return db_user
+
+@app.post("/createuser/",response_model=schemas.Users)
+def post_jobs(u_name,db: Session = Depends(get_db)):
+
+  db_user = model.Users(user_name=u_name,admin=0)
+  db.add(db_user)
+  db.commit()
+  db.refresh(db_user)
+  return db_user
+
+
 #deleting selected jobfrom ats.jobs
 @app.delete("/deletejobs/")
 def delete_jobs(id:int,db:Session=Depends(get_db)):
