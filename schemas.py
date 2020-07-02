@@ -4,7 +4,7 @@ from typing import Optional
 
 class Users(BaseModel):
     user_id: Optional[int]
-    admin: Optional[bool]
+
     job_applied: Optional[str]
     user_name: str
     class Config:
@@ -21,4 +21,10 @@ class Jobs(BaseModel):
     orm_mode = True
 
 
+class Recruiter(BaseModel):
+  adm_id:Optional[int]
+  adm_name:str
+  job_posted:Optional[int]
 
+  class Config:
+    orm_mode = True

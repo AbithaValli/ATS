@@ -50,8 +50,9 @@ def show_jobs(db: Session = Depends(get_db)):
     records = db.query(model.Jobs).all()
     return records
 #adding new jobs to the jobs table
-@app.post("/postjobs/",response_model=schemas.Jobs)
-def post_jobs(j_name,vacancies,j_desc,db: Session = Depends(get_db)):
+@app.post("/postjobs/")
+def post_jobs(j_name,vacancies,j_desc,userID,db: Session = Depends(get_db)):
+
 
   db_user = model.Jobs(job_name=j_name, no_of_vacancies=vacancies, job_description=j_desc)
   db.add(db_user)
@@ -62,12 +63,19 @@ def post_jobs(j_name,vacancies,j_desc,db: Session = Depends(get_db)):
 @app.post("/createuser/",response_model=schemas.Users)
 def new_user(u_name,db: Session = Depends(get_db)):
 
-  db_user = model.Users(user_name=u_name,admin=0)
+  db_user = model.Users(user_name=u_name)
   db.add(db_user)
   db.commit()
   db.refresh(db_user)
   return db_user
+@app.post("/recruiterLogin/",response_model=schemas.Recruiter)
+def new_user(UserName,db: Session = Depends(get_db)):
 
+  db_user = model.Recruiter(adm_name=UserName)
+  db.add(db_user)
+  db.commit()
+  db.refresh(db_user)
+  return db_user
 
 #deleting selected jobfrom ats.jobs
 @app.delete("/deletejobs/")
@@ -77,7 +85,7 @@ def delete_jobs(id:int,db:Session=Depends(get_db)):
     records = db.query(model.Jobs).filter(model.Jobs.job_id == id).first()
     db.delete(records)
     db.commit()
-    #db.refresh(records)
+
 
     return{
     "code":"success"
@@ -85,15 +93,9 @@ def delete_jobs(id:int,db:Session=Depends(get_db)):
   except ValidationError as e:
     print(e)
 
-  #@app.delete("/user/{job_id}", response_model=schemas.Jobs, responses={404: {"model": HTTPNotFoundError}})
-  #async def delete_user(id: int):
-  #  deleted_count = await model.Jobs.filter(job_id=id).delete()
-   # if not deleted_count:
-    #  raise HTTPException(status_code=404, detail=f"User {id} not found")
-    #return Status(message=f"Deleted user {id}")
 
 
-#fwtching the job details from ats.jobs based on the job_id
+#fetching the job details from ats.jobs based on the job_id
 @app.get("/jobs/{id}", response_model=schemas.Jobs)
 def search_jobs(id:int, db:Session=Depends(get_db)):
   try:
