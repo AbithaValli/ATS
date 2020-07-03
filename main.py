@@ -73,9 +73,7 @@ def new_user(u_name,db: Session = Depends(get_db)):
   db.add(db_user)
   db.commit()
   db.refresh(db_user)
-  records=db.query(model.Users).filter(model.Users.user_name==u_name).first()
-  records.user_id=records.user_id+500
-  db.commit()
+
   return db_user
 @app.post("/recruiterLogin/",response_model=schemas.Recruiter)
 def new_user(UserName,db: Session = Depends(get_db)):

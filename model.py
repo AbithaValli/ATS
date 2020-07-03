@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean,DDL,event
 from database import Base
+
 
 
 class Users(Base):
@@ -10,7 +11,11 @@ class Users(Base):
 
     job_applied = Column(String(45))
     user_name = Column(String(45))
-
+event.listen(
+    Users.__table__,
+    "after_create",
+    DDL("ALTER TABLE %(table)s AUTO_INCREMENT = 501;")
+)
 class Jobs(Base):
   __tablename__ = "Jobs"
 
