@@ -120,8 +120,12 @@ def apply_job(JobName,userid,db:Session=Depends((get_db))):
     try:
       records = db.query(model.Users).filter(model.Users.user_id == userid).first()
       records.job_applied = JobName
+      db_jobs = db.query(model.Jobs).filter(model.Jobs.job_name==JobName).first()
+      db_jobs.no_of_vacancies = db_jobs.no_of_vacancies-1
       db.commit()
-      return records
+      return {
+        "code":"success"
+      }
 
     except ValidationError as e:
       print(e)
