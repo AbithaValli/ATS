@@ -38,6 +38,7 @@ def main():
     return RedirectResponse(url="/docs/")
 
 
+
 #displays all the users
 @app.get("/users/", response_model=List[schemas.Users])
 def show_users(db: Session = Depends(get_db)):
@@ -56,6 +57,8 @@ def post_jobs(j_name,vacancies,j_desc,userID:int,db: Session = Depends(get_db)):
   if db.query(model.Users).filter(model.Users.user_id==userID).first() is None:
     db_user = model.Jobs(job_name=j_name, no_of_vacancies=vacancies, job_description=j_desc)
     db.add(db_user)
+    records=db.query(model.Recruiter).filter(model.Recruiter.adm_id == userID).first()
+    records.job_posted = j_name
     db.commit()
     db.refresh(db_user)
   else:
@@ -123,9 +126,7 @@ def apply_job(JobName,userid,db:Session=Depends((get_db))):
       db_jobs = db.query(model.Jobs).filter(model.Jobs.job_name==JobName).first()
       db_jobs.no_of_vacancies = db_jobs.no_of_vacancies-1
       db.commit()
-      return {
-        "code":"success"
-      }
+      return  db.query(model.Users).filter(model.Users.user_id == userid).first()
 
     except ValidationError as e:
       print(e)

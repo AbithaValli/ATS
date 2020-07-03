@@ -24,7 +24,7 @@ class Jobs(BaseModel):
 class Recruiter(BaseModel):
   adm_id:Optional[int]
   adm_name:str
-  job_posted:Optional[int]
+  job_posted:Optional[str]
 
   class Config:
     orm_mode = True

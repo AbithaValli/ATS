@@ -24,4 +24,4 @@ class Recruiter(Base):
 
   adm_id = Column(Integer,primary_key=True,index=True,autoincrement=True)
   adm_name = Column(String(25),index=True)
-  job_posted = Column(Integer,index=True)
+  job_posted = Column(String(45),index=True)
