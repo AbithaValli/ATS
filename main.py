@@ -115,18 +115,13 @@ def search_jobs(id:int, db:Session=Depends(get_db)):
 #updates the users table for the jobs applied by the users
 
 
-@app.put("/jobs/{id}/apply",response_model=schemas.Users)
+@app.put("/jobs/{id}/apply")
 def apply_job(JobName,userid,db:Session=Depends((get_db))):
     try:
       records = db.query(model.Users).filter(model.Users.user_id == userid).first()
-      #db_user=records(job_applied = JobName)
-      db.__setattr__(records.job_applied,JobName)
+      records.job_applied = JobName
       db.commit()
-      db.refresh(records)
-
-      return {
-      "code":"successful"
-    }
+      return records
 
     except ValidationError as e:
       print(e)
