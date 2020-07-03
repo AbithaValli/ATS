@@ -5,7 +5,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from starlette.responses import RedirectResponse
-from sqlalchemy import table,column
+from sqlalchemy import table, column, null
 import model, schemas
 from database import SessionLocal,engine, dbcursor
 
@@ -51,14 +51,19 @@ def show_jobs(db: Session = Depends(get_db)):
     return records
 #adding new jobs to the jobs table
 @app.post("/postjobs/")
-def post_jobs(j_name,vacancies,j_desc,userID,db: Session = Depends(get_db)):
+def post_jobs(j_name,vacancies,j_desc,userID:int,db: Session = Depends(get_db)):
 
+  if db.query(model.Users).filter(model.Users.user_id==userID).first() is None:
+    db_user = model.Jobs(job_name=j_name, no_of_vacancies=vacancies, job_description=j_desc)
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+  else:
+    return {"User is not a recruiter"}
 
-  db_user = model.Jobs(job_name=j_name, no_of_vacancies=vacancies, job_description=j_desc)
-  db.add(db_user)
-  db.commit()
-  db.refresh(db_user)
-  return db_user
+  return {
+    "code":"success"
+  }
 
 @app.post("/createuser/",response_model=schemas.Users)
 def new_user(u_name,db: Session = Depends(get_db)):
@@ -79,16 +84,20 @@ def new_user(UserName,db: Session = Depends(get_db)):
 
 #deleting selected jobfrom ats.jobs
 @app.delete("/deletejobs/")
-def delete_jobs(id:int,db:Session=Depends(get_db)):
+def delete_jobs(id:int,userID:int,db:Session=Depends(get_db)):
   try:
+    if db.query(model.Users).filter(model.Users.user_id==userID).first() is None:
 
-    records = db.query(model.Jobs).filter(model.Jobs.job_id == id).first()
-    db.delete(records)
-    db.commit()
+        records = db.query(model.Jobs).filter(model.Jobs.job_id == id).first()
+        db.delete(records)
+        db.commit()
+    else:
+      return{"User is not a recruiter"}
 
 
-    return{
-    "code":"success"
+
+    return {
+      "code":"success"
     }
   except ValidationError as e:
     print(e)
