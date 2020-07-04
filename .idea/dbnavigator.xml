@@ -23,12 +23,7 @@
     <autoscroll-to-editor value="false" />
     <autoscroll-from-editor value="true" />
     <show-object-properties value="true" />
-    <loaded-nodes>
-      <connection connection-id="ab4737fa-93b3-4706-b96f-abd625f5d191">
-        <schema name="ats" object-types="column, dataset trigger, view, table, index, procedure, constraint, function" />
-        <schema name="mysql" object-types="view, table, procedure, function" />
-      </connection>
-    </loaded-nodes>
+    <loaded-nodes />
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="ec94a1e7-e5c0-4a83-baaf-7f3b3970bad8">

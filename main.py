@@ -54,7 +54,7 @@ def show_jobs(db: Session = Depends(get_db)):
 @app.post("/postjobs/")
 def post_jobs(j_name,vacancies,j_desc,userID:int,db: Session = Depends(get_db)):
 
-  if db.query(model.Users).filter(model.Users.user_id==userID).first() is None:
+  if db.query(model.Recruiter).filter(model.Recruiter.adm_id==userID).first() is not None:
     db_user = model.Jobs(job_name=j_name, no_of_vacancies=vacancies, job_description=j_desc)
     db.add(db_user)
     db.commit()
@@ -88,7 +88,7 @@ def new_user(UserName,db: Session = Depends(get_db)):
 @app.delete("/deletejobs/")
 def delete_jobs(id:int,userID:int,db:Session=Depends(get_db)):
   try:
-    if db.query(model.Users).filter(model.Users.user_id==userID).first() is None:
+    if db.query(model.Recruiter).filter(model.Recruiter.adm_id==userID).first() is not None:
 
         records = db.query(model.Jobs).filter(model.Jobs.job_id == id).first()
         db.delete(records)
