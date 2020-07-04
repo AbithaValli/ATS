@@ -11,6 +11,7 @@ class Users(Base):
 
     job_applied = Column(String(45))
     user_name = Column(String(45))
+
 event.listen(
     Users.__table__,
     "after_create",
